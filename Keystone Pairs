@@ -1,0 +1,29 @@
+import copy
+
+def find_weight_pair(weights, target):
+    sortedweights = copy.copy(weights)
+    sortedweights.sort()
+    i, j = 0, len(sortedweights) - 1
+    while i < j:
+        if sortedweights[i] + sortedweights[j] == target:
+            output = [None, None]
+            for k in range(len(weights)):
+                if sortedweights[i] == weights[k] and output[0] is None:
+                    output[0] = k
+                elif sortedweights[j] == weights[k]:
+                    output[1] = k
+            output.sort()
+            return output
+        elif sortedweights[i] + sortedweights[j] < target:
+            i += 1
+        else:
+            j -= 1
+    return -1
+
+tests = [[[3, 3, 6], 6],
+         [[3, 2, 34], 33],
+         [[3, 7, 12, 74, 32, 4, 24, 9], 44],
+         [[3, 6, 3, 8, 4, 84, 24, 73, 24, 24], 2]]
+
+for test in tests:
+    print(find_weight_pair(test[0], test[1]))
