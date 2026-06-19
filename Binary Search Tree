@@ -1,0 +1,91 @@
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+def make_bst(values, start, end):
+    if start > end:
+        return None
+    mid = (start + end) // 2
+    root = Node(values[mid])
+    root.left = make_bst(values, start, mid - 1)
+    root.right = make_bst(values, mid + 1, end)
+    return root
+
+class BinarySearchTree:
+    def __init__(self, nums):
+        nums.sort()
+        self.root = make_bst(nums, 0, len(nums) - 1)
+
+    def add(self, value):
+        node = self.root
+        while True:
+            if value < node.value:
+                if node.left is None:
+                    node.left = Node(value)
+                    return
+                node = node.left
+            elif value == node.value:
+                return
+            else:
+                if node.right is None:
+                    node.right = Node(value)
+                    return
+                node = node.right
+
+    def delete(self, deletenode, parentnode = None):
+        if parentnode is None:
+            parentnode = self.findparent(deletenode.value)
+        if deletenode.left is deletenode.right is None:
+            if parentnode.left is deletenode:
+                parentnode.left = None
+            else:
+                parentnode.right = None
+        elif deletenode.left is not None and deletenode.right is None:
+            if parentnode.left is deletenode:
+                parentnode.left = deletenode.left
+            else:
+                parentnode.right = deletenode.left
+        elif deletenode.left is None and deletenode.right is not None:
+            if parentnode.left is deletenode:
+                parentnode.left = deletenode.right
+            else:
+                parentnode.right = deletenode.right
+        else:
+            replacenode = deletenode.right
+            parentreplacenode = deletenode
+            while replacenode.left is not None:
+                parentreplacenode = replacenode
+                replacenode = replacenode.left
+            deletenode.value = replacenode.value
+            self.delete(replacenode, parentreplacenode)
+
+    def find(self, value):
+        node = self.root
+        while value != node.value:
+            if value < node.value:
+                if node.left is None:
+                    return
+                node = node.left
+            else:
+                if node.right is None:
+                    return
+                node = node.right
+        return node
+
+    def findparent(self, value):
+        node = self.root
+        parentnode = None
+        while value != node.value:
+            if value < node.value:
+                if node.left is None:
+                    return
+                parentnode = node
+                node = node.left
+            else:
+                if node.right is None:
+                    return
+                parentnode = node
+                node = node.right
+        return parentnode
