@@ -4,19 +4,20 @@ class Node:
         self.left = None
         self.right = None
 
-def make_bst(values, start, end):
-    if start > end:
-        return None
-    mid = (start + end) // 2
-    root = Node(values[mid])
-    root.left = make_bst(values, start, mid - 1)
-    root.right = make_bst(values, mid + 1, end)
-    return root
-
 class BinarySearchTree:
     def __init__(self, nums):
         nums.sort()
-        self.root = make_bst(nums, 0, len(nums) - 1)
+        self.nums = nums
+        self.root = self.make_bst(0, len(self.nums) - 1)
+    
+    def make_bst(self, start, end):
+        if start > end:
+            return None
+        mid = (start + end) // 2
+        root = Node(self.nums[mid])
+        root.left = self.make_bst(start, mid - 1)
+        root.right = self.make_bst(mid + 1, end)
+        return root
 
     def add(self, value):
         node = self.root
@@ -38,17 +39,23 @@ class BinarySearchTree:
         if parentnode is None:
             parentnode = self.findparent(deletenode.value)
         if deletenode.left is deletenode.right is None:
-            if parentnode.left is deletenode:
+            if deletenode is self.root:
+                self.root = None
+            elif parentnode.left is deletenode:
                 parentnode.left = None
             else:
                 parentnode.right = None
         elif deletenode.left is not None and deletenode.right is None:
-            if parentnode.left is deletenode:
+            if deletenode is self.root:
+                self.root = deletenode.left
+            elif parentnode.left is deletenode:
                 parentnode.left = deletenode.left
             else:
                 parentnode.right = deletenode.left
         elif deletenode.left is None and deletenode.right is not None:
-            if parentnode.left is deletenode:
+            if deletenode is self.root:
+                self.root = deletenode.right
+            elif parentnode.left is deletenode:
                 parentnode.left = deletenode.right
             else:
                 parentnode.right = deletenode.right
@@ -61,20 +68,7 @@ class BinarySearchTree:
             deletenode.value = replacenode.value
             self.delete(replacenode, parentreplacenode)
 
-    def find(self, value):
-        node = self.root
-        while value != node.value:
-            if value < node.value:
-                if node.left is None:
-                    return
-                node = node.left
-            else:
-                if node.right is None:
-                    return
-                node = node.right
-        return node
-
-    def findparent(self, value):
+    def findnodeandparent(self, value):
         node = self.root
         parentnode = None
         while value != node.value:
@@ -88,4 +82,10 @@ class BinarySearchTree:
                     return
                 parentnode = node
                 node = node.right
-        return parentnode
+        return [node, parentnode]
+
+    def find(self, value):
+        return self.findnodeandparent(value)[0]
+
+    def findparent(self, value):
+        return self.findnodeandparent(value)[1]
