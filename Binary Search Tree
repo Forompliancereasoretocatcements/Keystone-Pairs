@@ -20,6 +20,9 @@ class BinarySearchTree:
         return root
 
     def add(self, value):
+        if self.root is None:
+            self.root = Node(value)
+            return
         node = self.root
         while True:
             if value < node.value:
@@ -89,3 +92,14 @@ class BinarySearchTree:
 
     def findparent(self, value):
         return self.findnodeandparent(value)[1]
+
+    def calculate_total_directory_size(self, node = None):
+        if node is None:
+            node = self.root
+        if node.left is node.right is None:
+            return node.value
+        if node.left is not None and node.right is None:
+            return node.value + self.calculate_total_directory_size(node.left)
+        if node.left is None and node.right is not None:
+            return node.value + self.calculate_total_directory_size(node.right)
+        return node.value + self.calculate_total_directory_size(node.left) + self.calculate_total_directory_size(node.right)
